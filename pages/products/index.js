@@ -10,6 +10,7 @@ import {
   Modal,
   Message,
   Segment,
+  Image,
   Label,
   List,
 } from "semantic-ui-react";
@@ -65,46 +66,26 @@ export default function Products({ products }) {
                 <Table celled>
                   <Table.Header>
                     <Table.Row>
-                      <Table.HeaderCell>First Name</Table.HeaderCell>
-                      <Table.HeaderCell>Last Name</Table.HeaderCell>
-                      <Table.HeaderCell>Email</Table.HeaderCell>
-                      <Table.HeaderCell>Username</Table.HeaderCell>
-                      <Table.HeaderCell>Password</Table.HeaderCell>
-                      <Table.HeaderCell textAlign="center">
-                        Web Access
-                      </Table.HeaderCell>
-                      <Table.HeaderCell textAlign="center">
-                        Edit
-                      </Table.HeaderCell>
+                      <Table.HeaderCell>Image</Table.HeaderCell>
+                      <Table.HeaderCell>Category</Table.HeaderCell>
+                      <Table.HeaderCell>Title</Table.HeaderCell>
+                      <Table.HeaderCell>Finish</Table.HeaderCell>
+                      <Table.HeaderCell>Price</Table.HeaderCell>
+                      <Table.HeaderCell>Quantity</Table.HeaderCell>
                     </Table.Row>
                   </Table.Header>
                   <Table.Body>
-                    {Object.keys(users).map((user) => (
+                    {products.map((product) => (
                       <>
-                        <Table.Row key={users[user].email}>
-                          <Table.Cell>{users[user].first_name}</Table.Cell>
-                          <Table.Cell>{users[user].last_name}</Table.Cell>
-                          <Table.Cell>{users[user].email}</Table.Cell>
-                          <Table.Cell>{user}</Table.Cell>
-                          <Table.Cell>{"**********"}</Table.Cell>
-                          <Table.Cell textAlign="center">
-                            {users[user].hasManagerAccess ? "Yes" : "No"}
+                        <Table.Row key={product._id}>
+                          <Table.Cell>
+                            <Image src={product.image} size="small" />
                           </Table.Cell>
-                          <Table.Cell textAlign="center">
-                            <Icon
-                              name="edit"
-                              className={styles.iconHover}
-                              onClick={() => {
-                                Router.push(
-                                  `/users/edit/${users[
-                                    user
-                                  ].first_name.toLowerCase()}${users[
-                                    user
-                                  ].last_name.toLowerCase()}`
-                                );
-                              }}
-                            />
-                          </Table.Cell>
+                          <Table.Cell>{product.category}</Table.Cell>
+                          <Table.Cell>{product.title}</Table.Cell>
+                          <Table.Cell>{product.finish}</Table.Cell>
+                          <Table.Cell>${product.price}</Table.Cell>
+                          <Table.Cell>{product.quantity}</Table.Cell>
                         </Table.Row>
                       </>
                     ))}
@@ -127,4 +108,16 @@ export default function Products({ products }) {
       )}
     </>
   );
+}
+
+export async function getServerSideProps() {
+  const { data: products } = await axios.get(
+    "http://localhost:3001/api/products"
+  );
+
+  return {
+    props: {
+      products: products,
+    },
+  };
 }
