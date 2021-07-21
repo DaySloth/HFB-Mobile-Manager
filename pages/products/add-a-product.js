@@ -78,6 +78,22 @@ export default function AddAProduct({
     image: "",
   });
 
+  const [newCategory, setNewCategory] = useState(false);
+  const [newTitle, setNewTitle] = useState(false);
+  const [newFinish, setNewFinish] = useState(false);
+
+  useEffect(() => {
+    if (newProduct.title === "create title") {
+      setNewTitle(true);
+    }
+    if (newProduct.category === "create category") {
+      setNewCategory(true);
+    }
+    if (newProduct.finish === "create finish") {
+      setNewFinish(true);
+    }
+  }, [newProduct]);
+
   function clearForm() {
     setNewProduct({
       title: "",
@@ -175,8 +191,14 @@ export default function AddAProduct({
                   }}
                 >
                   <Form.Group widths="equal">
-                    {newProduct.category === "create category" ? (
-                      <Form.Input fluid label="New Category" />
+                    {newCategory ? (
+                      <Form.Input
+                        fluid
+                        label="New Category"
+                        onChange={(e, { value }) =>
+                          setNewProduct({ ...newProduct, category: value })
+                        }
+                      />
                     ) : (
                       <Form.Select
                         label="Category"
@@ -193,8 +215,14 @@ export default function AddAProduct({
                         options={selectCategories}
                       />
                     )}
-                    {newProduct.title === "create title" ? (
-                      <Form.Input fluid label="New Title" />
+                    {newTitle ? (
+                      <Form.Input
+                        fluid
+                        label="New Title"
+                        onChange={(e, { value }) =>
+                          setNewProduct({ ...newProduct, title: value })
+                        }
+                      />
                     ) : (
                       <Form.Select
                         label="Title"
@@ -213,8 +241,14 @@ export default function AddAProduct({
                     )}
                   </Form.Group>
                   <Form.Group widths="equal">
-                    {newProduct.finish === "create finish" ? (
-                      <Form.Input fluid label="New Finish" />
+                    {newFinish ? (
+                      <Form.Input
+                        fluid
+                        label="New Finish"
+                        onChange={(e, { value }) =>
+                          setNewProduct({ ...newProduct, finish: value })
+                        }
+                      />
                     ) : (
                       <Form.Select
                         label="Finish"
@@ -236,6 +270,7 @@ export default function AddAProduct({
                       label="Length"
                       value={newProduct.length}
                       type="number"
+                      step="0.01"
                       onChange={(e, { value }) =>
                         setNewProduct({ ...newProduct, length: value })
                       }
@@ -245,6 +280,7 @@ export default function AddAProduct({
                       label="Width"
                       value={newProduct.width}
                       type="number"
+                      step="0.01"
                       onChange={(e, { value }) =>
                         setNewProduct({ ...newProduct, width: value })
                       }
@@ -254,6 +290,7 @@ export default function AddAProduct({
                       label="Height"
                       value={newProduct.height}
                       type="number"
+                      step="0.01"
                       onChange={(e, { value }) =>
                         setNewProduct({ ...newProduct, height: value })
                       }
@@ -272,6 +309,7 @@ export default function AddAProduct({
                     <Form.Input
                       fluid
                       label="Price"
+                      step="0.01"
                       value={newProduct.price}
                       required
                       type="number"
