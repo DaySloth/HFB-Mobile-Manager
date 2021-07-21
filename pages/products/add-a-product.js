@@ -108,6 +108,9 @@ export default function AddAProduct({
       height: "",
       image: "",
     });
+    setNewTitle(false);
+    setNewCategory(false);
+    setNewFinish(false);
   }
 
   async function createProduct() {
@@ -139,6 +142,7 @@ export default function AddAProduct({
               color: "green",
               text: "Successfully added new product!",
             });
+            Router.replace(router.asPath);
           } else {
             setMessage({
               visible: true,
@@ -364,6 +368,16 @@ export default function AddAProduct({
                     >
                       Submit
                     </Button>
+                    <Button
+                      color="gray"
+                      className={styles.centerLogo}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        clearForm();
+                      }}
+                    >
+                      Clear Form
+                    </Button>
                   </div>
                   {message.visible && (
                     <Message
@@ -398,13 +412,25 @@ export async function getServerSideProps() {
   const { data: products } = await axios.get(
     "http://localhost:3001/api/products"
   );
+  let categories = [];
+  let titles = [];
+  let finishes = [];
+  products.forEach(({ category, title, finish }) => {
+    categories.push(category);
+    titles.push(title);
+    finishes.push(finish);
+  });
+
+  categories = [...new Set(categories)];
+  titles = [...new Set(titles)];
+  finishes = [...new Set(finishes)];
 
   return {
     props: {
       products: products,
-      categories: ["Doors", "Wall Systems"],
-      titles: ["Shower Door 48x36", "Lux Stone Granite Thing"],
-      finishes: ["Brushed Chrome", "Silver"],
+      categories: categories,
+      titles: titles,
+      finishes: finishes,
     },
   };
 }
