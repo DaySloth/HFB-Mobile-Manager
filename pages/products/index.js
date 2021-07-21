@@ -52,7 +52,7 @@ export default function Products({ products }) {
           </div>
 
           <hr />
-          {products ? (
+          {products[0] ? (
             <>
               {/* <div className={styles.container}>
                 <Input
