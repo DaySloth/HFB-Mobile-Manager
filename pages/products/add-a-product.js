@@ -128,7 +128,7 @@ export default function AddAProduct({
       formData.append("image", newProduct.image);
       formData.append("data", JSON.stringify(newProduct));
       axios
-        .post("http://localhost:3001/api/products/create", formData, {
+        .post("https://hfb-api.herokuapp.com/api/products/create", formData, {
           headers: {
             "hfb-apikey": "S29obGVyUm9ja3Mh",
             "Content-Type": "multipart/form-data",
@@ -142,7 +142,7 @@ export default function AddAProduct({
               color: "green",
               text: "Successfully added new product!",
             });
-            Router.replace(router.asPath);
+            Router.replace(Router.asPath);
           } else {
             setMessage({
               visible: true,
@@ -369,7 +369,7 @@ export default function AddAProduct({
                       Submit
                     </Button>
                     <Button
-                      color="gray"
+                      color="grey"
                       className={styles.centerLogo}
                       onClick={(e) => {
                         e.preventDefault();
@@ -410,7 +410,7 @@ export default function AddAProduct({
 
 export async function getServerSideProps() {
   const { data: products } = await axios.get(
-    "http://localhost:3001/api/products"
+    "https://hfb-api.herokuapp.com/api/products"
   );
   let categories = [];
   let titles = [];
