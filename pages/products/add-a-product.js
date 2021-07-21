@@ -30,6 +30,11 @@ export default function AddAProduct({
   finishes,
 }) {
   const Router = useRouter();
+  const [message, setMessage] = useState({
+    visible: false,
+    color: "",
+    text: "",
+  });
   const fileInputRef = React.createRef();
   const [session, loading] = useSession();
   const selectCategories = categories.map((category) => {
@@ -73,6 +78,22 @@ export default function AddAProduct({
     image: "",
   });
 
+  function clearForm() {
+    setNewProduct({
+      title: "",
+      price: "",
+      quantity: "",
+      category: "",
+      sub_category: "",
+      part_num: "",
+      finish: "",
+      length: "",
+      width: "",
+      height: "",
+      image: "",
+    });
+  }
+
   async function createProduct() {
     let { title, price, quantity, category, part_num, finish } = newProduct;
     if (
@@ -95,7 +116,20 @@ export default function AddAProduct({
           },
         })
         .then((result) => {
-          console.log(result);
+          if (result.status === 200) {
+            clearForm();
+            setMessage({
+              visible: true,
+              color: "green",
+              text: "Successfully added new product!",
+            });
+          } else {
+            setMessage({
+              visible: true,
+              color: "red",
+              text: "Something went wrong, please try again",
+            });
+          }
         });
     } else {
       alert("Not done yet");
@@ -146,6 +180,7 @@ export default function AddAProduct({
                     ) : (
                       <Form.Select
                         label="Category"
+                        value={newProduct.category}
                         required
                         onChange={(e, { value }) =>
                           setNewProduct({ ...newProduct, category: value })
@@ -163,6 +198,7 @@ export default function AddAProduct({
                     ) : (
                       <Form.Select
                         label="Title"
+                        value={newProduct.title}
                         required
                         onChange={(e, { value }) =>
                           setNewProduct({ ...newProduct, title: value })
@@ -182,6 +218,7 @@ export default function AddAProduct({
                     ) : (
                       <Form.Select
                         label="Finish"
+                        value={newProduct.finish}
                         required
                         onChange={(e, { value }) =>
                           setNewProduct({ ...newProduct, finish: value })
@@ -197,6 +234,7 @@ export default function AddAProduct({
                     <Form.Input
                       fluid
                       label="Length"
+                      value={newProduct.length}
                       type="number"
                       onChange={(e, { value }) =>
                         setNewProduct({ ...newProduct, length: value })
@@ -205,6 +243,7 @@ export default function AddAProduct({
                     <Form.Input
                       fluid
                       label="Width"
+                      value={newProduct.width}
                       type="number"
                       onChange={(e, { value }) =>
                         setNewProduct({ ...newProduct, width: value })
@@ -213,6 +252,7 @@ export default function AddAProduct({
                     <Form.Input
                       fluid
                       label="Height"
+                      value={newProduct.height}
                       type="number"
                       onChange={(e, { value }) =>
                         setNewProduct({ ...newProduct, height: value })
@@ -224,6 +264,7 @@ export default function AddAProduct({
                       fluid
                       required
                       label="Part #"
+                      value={newProduct.part_num}
                       onChange={(e, { value }) =>
                         setNewProduct({ ...newProduct, part_num: value })
                       }
@@ -231,6 +272,7 @@ export default function AddAProduct({
                     <Form.Input
                       fluid
                       label="Price"
+                      value={newProduct.price}
                       required
                       type="number"
                       onChange={(e, { value }) =>
@@ -240,6 +282,7 @@ export default function AddAProduct({
                     <Form.Input
                       fluid
                       label="Quantity"
+                      value={newProduct.quantity}
                       required
                       type="number"
                       onChange={(e, { value }) =>
@@ -284,6 +327,15 @@ export default function AddAProduct({
                       Submit
                     </Button>
                   </div>
+                  {message.visible && (
+                    <Message
+                      onDismiss={() => {
+                        setMessage({ visible: false });
+                      }}
+                      header={message.text}
+                      color={message.color}
+                    />
+                  )}
                 </Form>
               </div>
             </>
