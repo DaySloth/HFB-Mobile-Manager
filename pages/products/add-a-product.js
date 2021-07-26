@@ -35,6 +35,7 @@ export default function AddAProduct({
     color: "",
     text: "",
   });
+  const [buttonLoading, setButtonLoading] = useState(false);
   const fileInputRef = React.createRef();
   const [session, loading] = useSession();
   const selectCategories = categories.map((category) => {
@@ -114,6 +115,7 @@ export default function AddAProduct({
   }
 
   async function createProduct() {
+    setButtonLoading(true);
     let { title, price, quantity, category, part_num, finish } = newProduct;
     if (
       title &&
@@ -136,14 +138,17 @@ export default function AddAProduct({
         })
         .then((result) => {
           if (result.status === 200) {
+            setButtonLoading(false);
             clearForm();
             setMessage({
               visible: true,
               color: "green",
               text: "Successfully added new product!",
             });
+
             Router.replace(Router.asPath);
           } else {
+            setButtonLoading(false);
             setMessage({
               visible: true,
               color: "red",
@@ -152,6 +157,7 @@ export default function AddAProduct({
           }
         });
     } else {
+      setButtonLoading(false);
       alert("Not done yet");
     }
   }
@@ -375,6 +381,7 @@ export default function AddAProduct({
                         e.preventDefault();
                         clearForm();
                       }}
+                      loading={buttonLoading}
                     >
                       Clear Form
                     </Button>
