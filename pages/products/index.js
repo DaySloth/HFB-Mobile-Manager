@@ -118,13 +118,13 @@ export default function Products({ products }) {
 }
 
 export async function getServerSideProps() {
-  // const { data: products } = await axios.get(
-  //   "https://hfb-api.herokuapp.com/api/products"
-  // );
-
   const { data: products } = await axios.get(
-    "http://localhost:3001/api/products"
+    "https://hfb-api.herokuapp.com/api/products"
   );
+
+  // const { data: products } = await axios.get(
+  //   "http://localhost:3001/api/products"
+  // );
 
   return {
     props: {
