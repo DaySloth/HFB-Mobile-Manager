@@ -426,15 +426,18 @@ export default function AddAProduct({
 }
 
 export async function getServerSideProps({ params }) {
-  // const { data: products } = await axios.get(
-  //   "https://hfb-api.herokuapp.com/api/products"
-  // );
   const { data: products } = await axios.get(
-    "http://localhost:3001/api/products"
+    "https://hfb-api.herokuapp.com/api/products"
   );
   const { data: foundProduct } = await axios.get(
-    `http://localhost:3001/api/products/${params.id}`
+    `https://hfb-api.herokuapp.com/api/products/${params.id}`
   );
+  // const { data: products } = await axios.get(
+  //   "http://localhost:3001/api/products"
+  // );
+  // const { data: foundProduct } = await axios.get(
+  //   `http://localhost:3001/api/products/${params.id}`
+  // );
   let categories = [];
   let titles = [];
   let finishes = [];
