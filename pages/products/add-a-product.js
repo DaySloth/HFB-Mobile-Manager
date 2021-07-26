@@ -35,7 +35,7 @@ export default function AddAProduct({
     color: "",
     text: "",
   });
-  const [buttonLoading, setButtonLoading] = useState(false);
+  const [formLoading, setFormLoading] = useState(false);
   const fileInputRef = React.createRef();
   const [session, loading] = useSession();
   const selectCategories = categories.map((category) => {
@@ -115,7 +115,7 @@ export default function AddAProduct({
   }
 
   async function createProduct() {
-    setButtonLoading(true);
+    setFormLoading(true);
     let { title, price, quantity, category, part_num, finish } = newProduct;
     if (
       title &&
@@ -129,8 +129,9 @@ export default function AddAProduct({
       let formData = new FormData();
       formData.append("image", newProduct.image);
       formData.append("data", JSON.stringify(newProduct));
+      //https://hfb-api.herokuapp.com/api/products/create
       axios
-        .post("https://hfb-api.herokuapp.com/api/products/create", formData, {
+        .post("http://localhost:3001/api/products/create", formData, {
           headers: {
             "hfb-apikey": "S29obGVyUm9ja3Mh",
             "Content-Type": "multipart/form-data",
@@ -138,7 +139,7 @@ export default function AddAProduct({
         })
         .then((result) => {
           if (result.status === 200) {
-            setButtonLoading(false);
+            setFormLoading(false);
             clearForm();
             setMessage({
               visible: true,
@@ -148,7 +149,7 @@ export default function AddAProduct({
 
             Router.replace(Router.asPath);
           } else {
-            setButtonLoading(false);
+            setFormLoading(false);
             setMessage({
               visible: true,
               color: "red",
@@ -157,7 +158,7 @@ export default function AddAProduct({
           }
         });
     } else {
-      setButtonLoading(false);
+      setFormLoading(false);
       alert("Not done yet");
     }
   }
@@ -199,6 +200,7 @@ export default function AddAProduct({
                     e.preventDefault();
                     createProduct();
                   }}
+                  loading={formLoading}
                 >
                   <Form.Group widths="equal">
                     {newCategory ? (
@@ -381,7 +383,6 @@ export default function AddAProduct({
                         e.preventDefault();
                         clearForm();
                       }}
-                      loading={buttonLoading}
                     >
                       Clear Form
                     </Button>
@@ -416,8 +417,11 @@ export default function AddAProduct({
 }
 
 export async function getServerSideProps() {
+  // const { data: products } = await axios.get(
+  //   "https://hfb-api.herokuapp.com/api/products"
+  // );
   const { data: products } = await axios.get(
-    "https://hfb-api.herokuapp.com/api/products"
+    "http://localhost:3001/api/products"
   );
   let categories = [];
   let titles = [];
