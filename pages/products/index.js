@@ -63,13 +63,14 @@ export default function Products({ products }) {
               </div> */}
 
               <div className={styles.tableContainer}>
-                <Table celled>
+                <Table celled selectable>
                   <Table.Header>
                     <Table.Row>
                       <Table.HeaderCell>Image</Table.HeaderCell>
                       <Table.HeaderCell>Category</Table.HeaderCell>
                       <Table.HeaderCell>Title</Table.HeaderCell>
                       <Table.HeaderCell>Finish</Table.HeaderCell>
+                      <Table.HeaderCell>Part Number</Table.HeaderCell>
                       <Table.HeaderCell>Price</Table.HeaderCell>
                       <Table.HeaderCell>Quantity</Table.HeaderCell>
                     </Table.Row>
@@ -77,13 +78,19 @@ export default function Products({ products }) {
                   <Table.Body>
                     {products.map((product) => (
                       <>
-                        <Table.Row key={product._id}>
+                        <Table.Row
+                          key={product._id}
+                          onClick={() =>
+                            Router.push(`/products/edit/${product._id}`)
+                          }
+                        >
                           <Table.Cell>
-                            <Image src={product.image} size="small" />
+                            <Image src={product.image} size="tiny" />
                           </Table.Cell>
                           <Table.Cell>{product.category}</Table.Cell>
                           <Table.Cell>{product.title}</Table.Cell>
                           <Table.Cell>{product.finish}</Table.Cell>
+                          <Table.Cell>{product.part_num}</Table.Cell>
                           <Table.Cell>${product.price}</Table.Cell>
                           <Table.Cell>{product.quantity}</Table.Cell>
                         </Table.Row>
@@ -97,11 +104,11 @@ export default function Products({ products }) {
             <Segment placeholder>
               <Header icon>
                 <Icon name="bath" />
-                Products page currently not completed...
+                No products found in the database
               </Header>
-              {/* <Button primary href="/users/add-a-user">
-                Add a User
-              </Button> */}
+              <Button primary href="/products/add-a-product">
+                Add a Product
+              </Button>
             </Segment>
           )}
         </>
@@ -111,8 +118,12 @@ export default function Products({ products }) {
 }
 
 export async function getServerSideProps() {
+  // const { data: products } = await axios.get(
+  //   "https://hfb-api.herokuapp.com/api/products"
+  // );
+
   const { data: products } = await axios.get(
-    "https://hfb-api.herokuapp.com/api/products"
+    "http://localhost:3001/api/products"
   );
 
   return {
