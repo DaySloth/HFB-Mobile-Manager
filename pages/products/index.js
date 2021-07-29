@@ -63,7 +63,7 @@ export default function Products({ products }) {
               </div> */}
 
               <div className={styles.tableContainer}>
-                <Table celled selectable>
+                <Table celled selectable compact>
                   <Table.Header>
                     <Table.Row>
                       <Table.HeaderCell>Image</Table.HeaderCell>
