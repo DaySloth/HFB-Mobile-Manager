@@ -396,6 +396,17 @@ export default function AddAProduct({
                       Clear Form
                     </Button>
                   </div>
+                  <div className={styles.centerButton}>
+                    <Button
+                      type="submit"
+                      color="red"
+                      className={styles.centerLogo}
+                      disabled
+                    >
+                      <Icon name="trash" />
+                      Delete Product
+                    </Button>
+                  </div>
                   {message.visible && (
                     <Message
                       onDismiss={() => {
