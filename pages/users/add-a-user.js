@@ -28,6 +28,7 @@ export default function SignUp() {
   const [first_name, setFirstName] = useState("");
   const [last_name, setLastName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone_number, setPhoneNumber] = useState("");
   const [tempPassword, setTempPassword] = useState(false);
   const [webAccess, setWebAccess] = useState(false);
   const [password, setPassword] = useState("");
@@ -66,9 +67,10 @@ export default function SignUp() {
         first_name: first_name,
         last_name: last_name,
         email: email,
+        phone_number: phone_number,
         password: password,
-        tempPassword: tempPassword,
-        hasManagerAccess: webAccess,
+        isTempPassword: tempPassword,
+        hasWebAccess: webAccess,
       };
 
       try {
@@ -113,6 +115,7 @@ export default function SignUp() {
     setFirstName("");
     setLastName("");
     setEmail("");
+    setPhoneNumber("");
     setPassword("");
     setConfirmPassword("");
     setPasswordError("");
@@ -169,6 +172,13 @@ export default function SignUp() {
                 placeholder="User@email.com"
                 onChange={(event) => setEmail(event.target.value)}
                 value={email}
+                required
+              />
+              <Form.Input
+                label="Phone Number"
+                type="tel"
+                onChange={(event) => setPhoneNumber(event.target.value)}
+                value={phone_number}
                 required
               />
               <div className={styles.block}>
