@@ -33,7 +33,7 @@ export default function SignUp() {
   const [webAccess, setWebAccess] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordError, setPasswordError] = useState();
+  const [passwordError, setPasswordError] = useState(false);
   const [pageMessage, setPageMessage] = useState();
 
   const [buttonLoading, setButtonLoading] = useState(false);
@@ -55,12 +55,13 @@ export default function SignUp() {
     setPageMessage("");
     setButtonLoading(!loading);
     if (
-      !passwordError &&
-      first_name &&
-      last_name &&
-      email &&
-      password &&
-      confirmPassword
+      tempPassword ||
+      (!passwordError &&
+        first_name &&
+        last_name &&
+        email &&
+        password &&
+        confirmPassword)
     ) {
       //call to create user
       let newUser = {
@@ -198,27 +199,31 @@ export default function SignUp() {
                 />
               </div>
 
-              <Form.Input
-                icon="lock"
-                iconPosition="left"
-                label="Password"
-                type="password"
-                onChange={(event) => setPassword(event.target.value)}
-                className={passwordError && styles.redGlowingBorder}
-                value={password}
-                required
-              />
+              {!tempPassword && (
+                <>
+                  <Form.Input
+                    icon="lock"
+                    iconPosition="left"
+                    label="Password"
+                    type="password"
+                    onChange={(event) => setPassword(event.target.value)}
+                    className={passwordError && styles.redGlowingBorder}
+                    value={password}
+                    required
+                  />
 
-              <Form.Input
-                icon="lock"
-                iconPosition="left"
-                label="Confirm Password"
-                type="password"
-                onChange={(event) => setConfirmPassword(event.target.value)}
-                value={confirmPassword}
-                className={passwordError && styles.redGlowingBorder}
-                required
-              />
+                  <Form.Input
+                    icon="lock"
+                    iconPosition="left"
+                    label="Confirm Password"
+                    type="password"
+                    onChange={(event) => setConfirmPassword(event.target.value)}
+                    value={confirmPassword}
+                    className={passwordError && styles.redGlowingBorder}
+                    required
+                  />
+                </>
+              )}
 
               {passwordError && (
                 <>

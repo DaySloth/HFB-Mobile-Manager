@@ -14,7 +14,6 @@ export default async (req, res) => {
           },
         })
         .then(({ status }) => {
-          console.log(status);
           if (status === 200) {
             res.json({ status: 200, message: "Successfully created user" });
             res.end();

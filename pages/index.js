@@ -14,7 +14,6 @@ import {
   List,
 } from "semantic-ui-react";
 import { useSession } from "next-auth/client";
-import db from "../util/firebase.config";
 import React, { useEffect, useState } from "react";
 import styles from "../styles/Home.module.css";
 import Loader from "../components/loader";
@@ -76,7 +75,7 @@ export default function Home({ users }) {
                       <Table.HeaderCell>First Name</Table.HeaderCell>
                       <Table.HeaderCell>Last Name</Table.HeaderCell>
                       <Table.HeaderCell>Email</Table.HeaderCell>
-                      <Table.HeaderCell>Username</Table.HeaderCell>
+                      <Table.HeaderCell>Phone Number</Table.HeaderCell>
                       <Table.HeaderCell>Password</Table.HeaderCell>
                       <Table.HeaderCell textAlign="center">
                         Web Access
@@ -87,29 +86,27 @@ export default function Home({ users }) {
                     </Table.Row>
                   </Table.Header>
                   <Table.Body>
-                    {Object.keys(users).map((user) => (
+                    {users.map((user) => (
                       <>
-                        <Table.Row key={users[user].email}>
-                          <Table.Cell>{users[user].first_name}</Table.Cell>
-                          <Table.Cell>{users[user].last_name}</Table.Cell>
-                          <Table.Cell>{users[user].email}</Table.Cell>
-                          <Table.Cell>{user}</Table.Cell>
-                          <Table.Cell>{"**********"}</Table.Cell>
+                        <Table.Row key={user.email}>
+                          <Table.Cell>{user.first_name}</Table.Cell>
+                          <Table.Cell>{user.last_name}</Table.Cell>
+                          <Table.Cell>{user.email}</Table.Cell>
+                          <Table.Cell>{`(${user.phone_number[0]}${user.phone_number[1]}${user.phone_number[2]}) ${user.phone_number[3]}${user.phone_number[4]}${user.phone_number[5]}-${user.phone_number[6]}${user.phone_number[7]}${user.phone_number[8]}${user.phone_number[9]}`}</Table.Cell>
+                          <Table.Cell>
+                            {user.isTempPassword
+                              ? "Temporary password"
+                              : "**********"}
+                          </Table.Cell>
                           <Table.Cell textAlign="center">
-                            {users[user].hasManagerAccess ? "Yes" : "No"}
+                            {user.hasWebAccess ? "Yes" : "No"}
                           </Table.Cell>
                           <Table.Cell textAlign="center">
                             <Icon
                               name="edit"
                               className={styles.iconHover}
                               onClick={() => {
-                                Router.push(
-                                  `/users/edit/${users[
-                                    user
-                                  ].first_name.toLowerCase()}${users[
-                                    user
-                                  ].last_name.toLowerCase()}`
-                                );
+                                Router.push(`/users/edit/${user._id}`);
                               }}
                             />
                           </Table.Cell>
@@ -138,11 +135,13 @@ export default function Home({ users }) {
 }
 
 export async function getServerSideProps() {
-  let users = await db.ref(`/users/`).once("value");
+  const { data: users } = await axios.get(
+    "https://hfb-api.herokuapp.com/api/users"
+  );
 
   return {
     props: {
-      users: users.val(),
+      users: users,
     },
   };
 }
