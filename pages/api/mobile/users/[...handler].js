@@ -1,5 +1,4 @@
-import db from "../../../../util/firebase.config";
-import { Base64 } from "js-base64";
+import axios from "axios";
 
 export default async (req, res) => {
   const {
@@ -8,24 +7,32 @@ export default async (req, res) => {
 
   switch (handler[0]) {
     case "create":
-      req.body.password = Base64.encode(req.body.password);
-      const username =
-        req.body.first_name.toLowerCase() + req.body.last_name.toLowerCase();
-      db.ref(`/users/${username}`)
-        .once("value")
-        .then((result) => {
-          if (result.val()) {
-            res.json({ status: 400, message: "User already exists" });
+      axios
+        .post("https://hfb-api.herokuapp.com/api/users/create", req.body, {
+          headers: {
+            "hfb-apikey": "S29obGVyUm9ja3Mh",
+          },
+        })
+        .then(({ status }) => {
+          console.log(status);
+          if (status === 200) {
+            res.json({ status: 200, message: "Successfully created user" });
             res.end();
           } else {
-            db.ref(`/users/${username}`)
-              .set(req.body)
-              .then((result) => {
-                res.json({ status: 200, message: "Successfully created user" });
-                res.end();
-              });
+            res.json({ status: 400, message: "Error in adding user" });
+            res.end();
+          }
+        })
+        .catch(({ response }) => {
+          if (response.status === 409) {
+            res.json({ status: 400, message: "Users Already Exists" });
+            res.end();
+          } else {
+            res.json({ status: 400, message: "Error in adding user" });
+            res.end();
           }
         });
+
       break;
     case "update":
       const updateUsername =
