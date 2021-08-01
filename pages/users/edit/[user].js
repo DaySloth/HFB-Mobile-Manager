@@ -14,7 +14,6 @@ import axios from "axios";
 import NavHeader from "../../../components/header";
 import { useSession } from "next-auth/client";
 import Loader from "../../../components/loader";
-import db from "../../../util/firebase.config";
 import { useRouter } from "next/router";
 
 export default function EditUser({ dbUser }) {
@@ -34,8 +33,9 @@ export default function EditUser({ dbUser }) {
   const [first_name, setFirstName] = useState(user.first_name);
   const [last_name, setLastName] = useState(user.last_name);
   const [email, setEmail] = useState(user.email);
+  const [phone_number, setPhoneNumber] = useState(user.phone_number);
   const [resetPassword, setResetPassword] = useState(user.tempPassword);
-  const [webAccess, setWebAccess] = useState(user.hasManagerAccess);
+  const [webAccess, setWebAccess] = useState(user.hasWebAccess);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState();
@@ -80,52 +80,10 @@ export default function EditUser({ dbUser }) {
       first_name: first_name,
       last_name: last_name,
       email: email,
+      phone_number: phone_number,
       hasManagerAccess: webAccess,
       tempPassword: resetPassword,
     };
-
-    if (resetPassword) {
-      if (!passwordError) {
-        if (password.trim()) {
-          updatedUser.password = password;
-        } else {
-          setPasswordError("Password cannot be blank");
-          setButtonLoading(false);
-          return;
-        }
-      } else {
-        setButtonLoading(false);
-        return;
-      }
-    }
-
-    if (
-      `${first_name.toLowerCase()}${last_name.toLowerCase()}` !==
-      `${user.first_name.toLowerCase()}${user.last_name.toLowerCase()}`
-    ) {
-      updatedUser.oldUsername = `${user.first_name.toLowerCase()}${user.last_name.toLowerCase()}`;
-    }
-    const { data } = await axios.post(
-      `/api/mobile/users/update/${first_name.toLowerCase()}${last_name.toLowerCase()}`,
-      updatedUser
-    );
-    if (data.status) {
-      if (data.status === 400) {
-        //set error message
-        setPageMessage({
-          color: "red",
-          message: data.message,
-        });
-        setButtonLoading(false);
-      } else if (data.status === 200) {
-        //set success message
-        setPageMessage({
-          color: "green",
-          message: data.message,
-        });
-        setButtonLoading(false);
-      }
-    }
   }
 
   async function removeUser(e) {
@@ -186,7 +144,6 @@ export default function EditUser({ dbUser }) {
                   value={first_name}
                   required
                 />
-
                 <Form.Input
                   label="Last Name"
                   type="text"
@@ -195,7 +152,6 @@ export default function EditUser({ dbUser }) {
                   value={last_name}
                   required
                 />
-
                 <Form.Input
                   label="Email"
                   type="email"
@@ -205,6 +161,13 @@ export default function EditUser({ dbUser }) {
                   required
                 />
 
+                <Form.Input
+                  label="Phone Number"
+                  type="tel"
+                  onChange={(event) => setPhoneNumber(event.target.value)}
+                  value={phone_number}
+                  required
+                />
                 <div className={styles.block}>
                   <Checkbox
                     label="Has Web Manager Access"
@@ -213,39 +176,6 @@ export default function EditUser({ dbUser }) {
                     checked={webAccess}
                   />
                 </div>
-                {resetPassword && (
-                  <>
-                    <Form.Input
-                      icon="lock"
-                      iconPosition="left"
-                      label="New Temporary Password"
-                      type="password"
-                      onChange={(event) => setPassword(event.target.value)}
-                      className={passwordError && styles.redGlowingBorder}
-                      value={password}
-                      required
-                    />
-
-                    <Form.Input
-                      icon="lock"
-                      iconPosition="left"
-                      label="Confirm Temporary Password"
-                      type="password"
-                      onChange={(event) =>
-                        setConfirmPassword(event.target.value)
-                      }
-                      value={confirmPassword}
-                      className={passwordError && styles.redGlowingBorder}
-                      required
-                    />
-
-                    {passwordError && (
-                      <>
-                        <h5 className={styles.redText}>{passwordError}</h5>
-                      </>
-                    )}
-                  </>
-                )}
 
                 {pageMessage && (
                   <>
@@ -254,7 +184,6 @@ export default function EditUser({ dbUser }) {
                     </Message>
                   </>
                 )}
-
                 <div className={styles.center} style={{ width: "400px" }}>
                   <Button.Group>
                     <Button
@@ -313,11 +242,13 @@ export default function EditUser({ dbUser }) {
 }
 
 export async function getServerSideProps({ params }) {
-  let user = await db.ref(`/users/${params.user}`).once("value");
+  let user = await axios.get(
+    `https://hfb-api.herokuapp.com/api/users/${params.user}`
+  );
 
   return {
     props: {
-      dbUser: user.val(),
+      dbUser: user,
     },
   };
 }
