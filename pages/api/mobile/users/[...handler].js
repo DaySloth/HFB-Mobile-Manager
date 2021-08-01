@@ -34,41 +34,10 @@ export default async (req, res) => {
 
       break;
     case "update":
-      const updateUsername =
-        req.body.first_name.toLowerCase() + req.body.last_name.toLowerCase();
-      if (req.body.password) {
-        req.body.password = Base64.encode(req.body.password);
-      }
-      if (req.body.oldUsername) {
-        let oldUsername = req.body.oldUsername;
-        delete req.body.oldUsername;
-
-        db.ref(`/users/${oldUsername}`)
-          .remove()
-          .then((result) => {
-            db.ref(`/users/${updateUsername}`)
-              .set(req.body)
-              .then((result) => {
-                res.json({ status: 200, message: "Successfully updated user" });
-                res.end();
-              });
-          });
-      } else {
-        db.ref(`/users/${updateUsername}`)
-          .update(req.body)
-          .then((result) => {
-            res.json({ status: 200, message: "Successfully updated user" });
-            res.end();
-          });
-      }
+      //update user
       break;
     case "delete":
-      db.ref(`/users/${handler[1]}`)
-        .remove()
-        .then((result) => {
-          res.json({ status: 200, message: "Successfully deleted user" });
-          res.end();
-        });
+      //delete user
       break;
 
     default:
