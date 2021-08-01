@@ -96,6 +96,11 @@ export default function EditUser({ dbUser }) {
         },
       }
     );
+    if (data.status === 200) {
+      Router.push("/");
+    } else {
+      //error
+    }
   }
 
   return (
@@ -178,17 +183,15 @@ export default function EditUser({ dbUser }) {
                       content="Delete User"
                       color="red"
                       onClick={(e) => {
-                        removeUser(e);
+                        removeUser(e, user._id);
                       }}
                     />
                     <Button
-                      content={
-                        resetPassword ? "Cancel Reset" : "Reset Password"
-                      }
+                      content="Reset Password"
                       onClick={(e) => {
                         setResetPassword(!resetPassword);
                       }}
-                      color={resetPassword ? "blue" : "orange"}
+                      color="blue"
                     />
 
                     {isDifferent && (
