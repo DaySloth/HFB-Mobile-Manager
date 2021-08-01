@@ -58,7 +58,7 @@ export default function Home({ users }) {
           </div>
 
           <hr />
-          {users ? (
+          {users[0] ? (
             <>
               {/* <div className={styles.container}>
                 <Input
