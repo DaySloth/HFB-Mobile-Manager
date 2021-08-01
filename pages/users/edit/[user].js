@@ -49,7 +49,7 @@ export default function EditUser({ dbUser }) {
       first_name !== user.first_name ||
       last_name !== user.last_name ||
       email !== user.email ||
-      webAccess !== user.hasManagerAccess ||
+      webAccess !== user.hasWebAccess ||
       resetPassword
     ) {
       setIsDifferent(true);
@@ -86,29 +86,16 @@ export default function EditUser({ dbUser }) {
     };
   }
 
-  async function removeUser(e) {
+  async function removeUser(e, userId) {
     e.preventDefault();
-    const { data } = await axios.get(
-      `/api/mobile/users/delete/${first_name.toLowerCase()}${last_name.toLowerCase()}`
-    );
-    if (data.status) {
-      if (data.status === 400) {
-        //set error message
-        setPageMessage({
-          color: "red",
-          message: data.message,
-        });
-        setButtonLoading(false);
-      } else if (data.status === 200) {
-        //set success message
-        setPageMessage({
-          color: "green",
-          message: data.message,
-        });
-        setButtonLoading(false);
-        window.location.href = "/";
+    const data = await axios.delete(
+      `https://hfb-api.herokuapp.com/api/users/delete/${userId}`,
+      {
+        headers: {
+          "hfb-apikey": "S29obGVyUm9ja3Mh",
+        },
       }
-    }
+    );
   }
 
   return (
