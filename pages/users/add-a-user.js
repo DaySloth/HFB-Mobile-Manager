@@ -175,6 +175,7 @@ export default function SignUp() {
                 value={email}
                 required
               />
+
               <Form.Input
                 label="Phone Number"
                 type="tel"
@@ -182,6 +183,7 @@ export default function SignUp() {
                 value={phone_number}
                 required
               />
+              
               <div className={styles.block}>
                 <Checkbox
                   label="Temporary Password"
