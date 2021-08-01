@@ -242,7 +242,7 @@ export default function EditUser({ dbUser }) {
 }
 
 export async function getServerSideProps({ params }) {
-  let user = await axios.get(
+  const { data: user } = await axios.get(
     `https://hfb-api.herokuapp.com/api/users/${params.user}`
   );
 
