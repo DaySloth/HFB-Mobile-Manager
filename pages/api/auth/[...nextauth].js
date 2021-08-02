@@ -14,6 +14,7 @@ export default NextAuth({
           const data = {
             username: credentials.username,
             password: credentials.password,
+            isTempPassword: credentials.tempPassword,
           };
           // API call associated with authentification
           // look up the user from the credentials supplied
