@@ -1,7 +1,6 @@
 import NextAuth from "next-auth";
 import Providers from "next-auth/providers";
-import db from "../../../util/firebase.config";
-import { Base64 } from "js-base64";
+import axios from "axios";
 
 export default NextAuth({
   providers: [
@@ -19,9 +18,8 @@ export default NextAuth({
           };
           // API call associated with authentification
           // look up the user from the credentials supplied
-          const user = await login(data);
+          const { data: user } = await login(data);
           if (user) {
-            console.log(user);
             if (user.hasWebAccess) {
               if (user.isTempPassword) {
                 return Promise.reject(
@@ -55,43 +53,65 @@ export default NextAuth({
     verifyRequest: "/auth/verify-request", // (used for check email message)
     newUser: null, // If set, new users will be directed here on first sign in
   },
+  callbacks: {
+    jwt: async (token, user, account, profile, isNewUser) => {
+      //  "user" parameter is the object received from "authorize"
+      //  "token" is being send below to "session" callback...
+      //  ...so we set "user" param of "token" to object from "authorize"...
+      //  ...and return it...
+      user && (token.user = user);
+      return Promise.resolve(token); // ...here
+    },
+    session: async (session, user, sessionToken) => {
+      //  "session" is current session object
+      //  below we set "user" param of "session" to value received from "jwt" callback
+      session.user = user.user;
+      return Promise.resolve(session);
+    },
+  },
 });
 
 const login = async (data) => {
-  //   const { db } = await connectToDatabase();
-  //   const Users = await db.collection("users");
-  const { username, password } = data;
-  //   const user = await Users.find({ email: username }).toArray();
-  //   if (user[0]) {
-  //     const correctPass = await bcrypt.compare(password, user[0].password);
+  const { username, password, resetTempPassword } = data;
+  if (resetTempPassword === "true") {
+    try {
+      const foundUser = await axios.post(
+        "https://hfb-api.herokuapp.com/api/users/login/temp-password",
+        { email: username, password: password },
+        {
+          headers: {
+            "hfb-apikey": "S29obGVyUm9ja3Mh",
+          },
+        }
+      );
 
-  //     if (correctPass) {
-  //       return {
-  //         name: user[0].first_name,
-  //         email: user[0].email,
-  //       };
-  //     } else {
-  //       return null;
-  //     }
-  //   } else {
-  //     return null;
-  //   }
-  const result = await db.ref(`/users/${username}`).once("value");
-  const foundUser = result.val();
-  if (foundUser) {
-    if (foundUser.hasManagerAccess) {
-      if (Base64.decode(foundUser.password) === password) {
-        return {
-          name: foundUser.first_name,
-          email: foundUser.email,
-        };
+      if (foundUser) {
+        return foundUser;
       } else {
         return null;
       }
-    } else {
+    } catch (error) {
       return null;
     }
   } else {
-    return null;
+    try {
+      const foundUser = await axios.post(
+        "https://hfb-api.herokuapp.com/api/users/login",
+        { email: username, password: password },
+        {
+          headers: {
+            "hfb-apikey": "S29obGVyUm9ja3Mh",
+          },
+        }
+      );
+
+      if (foundUser) {
+        return foundUser;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      return null;
+    }
   }
 };
