@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import Providers from "next-auth/providers";
-import axios from "axios";
+import db from "../../../util/firebase.config";
+import { Base64 } from "js-base64";
 
 export default NextAuth({
   providers: [
@@ -59,58 +60,38 @@ export default NextAuth({
 const login = async (data) => {
   //   const { db } = await connectToDatabase();
   //   const Users = await db.collection("users");
-  const { username, password, resetTempPassword } = data;
-  try {
-    if (resetTempPassword) {
-      const { data: user } = await axios.post(
-        "https://hfb-api.herokuapp.com/api/users/login/temp-password",
-        {
-          email: username,
-          password: password,
-        },
-        {
-          headers: {
-            "hfb-apikey": "S29obGVyUm9ja3Mh",
-          },
-        }
-      );
-      return user;
-    } else {
-      const { data: user } = await axios.post(
-        "https://hfb-api.herokuapp.com/api/users/login",
-        {
-          email: username,
-          password: password,
-        },
-        {
-          headers: {
-            "hfb-apikey": "S29obGVyUm9ja3Mh",
-          },
-        }
-      );
-      return user;
-    }
-  } catch (error) {
-    return null;
-  }
+  const { username, password } = data;
+  //   const user = await Users.find({ email: username }).toArray();
+  //   if (user[0]) {
+  //     const correctPass = await bcrypt.compare(password, user[0].password);
 
-  // if (user[0]) {
-  //   const correctPass = await bcrypt.compare(password, user[0].password);
-
-  //   if (correctPass) {
-  //     return {
-  //       name: user[0].first_name,
-  //       email: user[0].email,
-  //     };
+  //     if (correctPass) {
+  //       return {
+  //         name: user[0].first_name,
+  //         email: user[0].email,
+  //       };
+  //     } else {
+  //       return null;
+  //     }
   //   } else {
   //     return null;
   //   }
-  // } else {
-  //   return null;
-  // }
-
-  // return {
-  //   name: "allister",
-  //   email: "someemail@email.com",
-  // };
+  const result = await db.ref(`/users/${username}`).once("value");
+  const foundUser = result.val();
+  if (foundUser) {
+    if (foundUser.hasManagerAccess) {
+      if (Base64.decode(foundUser.password) === password) {
+        return {
+          name: foundUser.first_name,
+          email: foundUser.email,
+        };
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  } else {
+    return null;
+  }
 };
