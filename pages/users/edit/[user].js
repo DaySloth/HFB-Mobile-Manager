@@ -8,6 +8,7 @@ import {
   Header,
   Icon,
   Segment,
+  Modal,
 } from "semantic-ui-react";
 import styles from "../../../styles/Home.module.css";
 import axios from "axios";
@@ -34,7 +35,7 @@ export default function EditUser({ dbUser }) {
   const [last_name, setLastName] = useState(user.last_name);
   const [email, setEmail] = useState(user.email);
   const [phone_number, setPhoneNumber] = useState(user.phone_number);
-  const [resetPassword, setResetPassword] = useState(user.tempPassword);
+  const [open, setOpen] = useState(false);
   const [webAccess, setWebAccess] = useState(user.hasWebAccess);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -49,14 +50,13 @@ export default function EditUser({ dbUser }) {
       first_name !== user.first_name ||
       last_name !== user.last_name ||
       email !== user.email ||
-      webAccess !== user.hasWebAccess ||
-      resetPassword
+      webAccess !== user.hasWebAccess
     ) {
       setIsDifferent(true);
     } else {
       setIsDifferent(false);
     }
-  }, [first_name, last_name, email, webAccess, resetPassword]);
+  }, [first_name, last_name, email, webAccess]);
 
   useEffect(() => {
     if (confirmPassword) {
@@ -82,8 +82,19 @@ export default function EditUser({ dbUser }) {
       email: email,
       phone_number: phone_number,
       hasManagerAccess: webAccess,
-      tempPassword: resetPassword,
     };
+  }
+
+  async function resetPassword() {
+    const data = await axios.get(
+      `https://hfb-api.herokuapp.com/api/users/reset-password/${dbUser._id}`,
+      {
+        headers: {
+          "hfb-apikey": "S29obGVyUm9ja3Mh",
+        },
+      }
+    );
+    console.log(data);
   }
 
   async function removeUser(e, userId) {
@@ -189,7 +200,8 @@ export default function EditUser({ dbUser }) {
                     <Button
                       content="Reset Password"
                       onClick={(e) => {
-                        setResetPassword(!resetPassword);
+                        //generate reset
+                        setOpen(true);
                       }}
                       color="blue"
                     />
@@ -227,6 +239,33 @@ export default function EditUser({ dbUser }) {
           </div>
         </>
       )}
+      <Modal
+        basic
+        onClose={() => setOpen(false)}
+        onOpen={() => setOpen(true)}
+        open={open}
+        size="small"
+      >
+        <Header icon>
+          <Icon name="archive" />
+          Are you sure you want to reset the password for {first_name}?
+        </Header>
+        <Modal.Actions>
+          <Button
+            color="red"
+            inverted
+            onClick={() => {
+              setOpen(false);
+              resetPassword();
+            }}
+          >
+            <Icon name="remove" /> No
+          </Button>
+          <Button color="green" inverted onClick={() => setOpen(false)}>
+            <Icon name="checkmark" /> Yes
+          </Button>
+        </Modal.Actions>
+      </Modal>
     </>
   );
 }
