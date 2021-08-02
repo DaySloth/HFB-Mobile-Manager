@@ -37,10 +37,8 @@ export default function EditUser({ dbUser }) {
   const [phone_number, setPhoneNumber] = useState(user.phone_number);
   const [open, setOpen] = useState(false);
   const [webAccess, setWebAccess] = useState(user.hasWebAccess);
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordError, setPasswordError] = useState();
-  const [pageMessage, setPageMessage] = useState();
+
+  const [modalMessage, setModalMessage] = useState({ action: "", message: "" });
   const [isDifferent, setIsDifferent] = useState(false);
 
   const [buttonLoading, setButtonLoading] = useState(false);
@@ -58,23 +56,9 @@ export default function EditUser({ dbUser }) {
     }
   }, [first_name, last_name, email, webAccess]);
 
-  useEffect(() => {
-    if (confirmPassword) {
-      if (confirmPassword !== password) {
-        setPasswordError("Passwords do not match");
-      } else if (confirmPassword === password) {
-        setPasswordError("");
-      }
-    } else {
-      setPasswordError("");
-    }
-  }, [confirmPassword]);
-
   async function saveEdit(e) {
     e.preventDefault();
     setButtonLoading(true);
-    setPageMessage("");
-    setPasswordError("");
 
     const updatedUser = {
       first_name: first_name,
@@ -83,6 +67,19 @@ export default function EditUser({ dbUser }) {
       phone_number: phone_number,
       hasManagerAccess: webAccess,
     };
+
+    const data = await axios.post(
+      `https://hfb-api.herokuapp.com/api/users/update/${dbUser._id}`,
+      updatedUser,
+      {
+        headers: {
+          "hfb-apikey": "S29obGVyUm9ja3Mh",
+        },
+      }
+    );
+    if (data.status === 200) {
+      Router.push("/");
+    }
   }
 
   async function resetPassword() {
@@ -182,13 +179,6 @@ export default function EditUser({ dbUser }) {
                   />
                 </div>
 
-                {pageMessage && (
-                  <>
-                    <Message color={pageMessage.color}>
-                      <Message.Header>{pageMessage.message}</Message.Header>
-                    </Message>
-                  </>
-                )}
                 <div className={styles.center} style={{ width: "400px" }}>
                   <Button.Group>
                     <Button
@@ -196,13 +186,21 @@ export default function EditUser({ dbUser }) {
                       content="Delete User"
                       color="red"
                       onClick={(e) => {
-                        removeUser(e, user._id);
+                        setModalMessage({
+                          action: "delete",
+                          message: `Are you sure you want to delete ${first_name}?`,
+                        });
+                        setOpen(true);
                       }}
                     />
                     <Button
                       content="Reset Password"
                       onClick={(e) => {
                         //generate reset
+                        setModalMessage({
+                          action: "reset",
+                          message: `Are you sure you want to reset the password for ${first_name}?`,
+                        });
                         setOpen(true);
                       }}
                       color="blue"
@@ -250,7 +248,7 @@ export default function EditUser({ dbUser }) {
       >
         <Header icon>
           <Icon name="archive" />
-          Are you sure you want to reset the password for {first_name}?
+          {modalMessage.message}
         </Header>
         <Modal.Actions>
           <Button color="red" inverted onClick={() => setOpen(false)}>
@@ -261,7 +259,12 @@ export default function EditUser({ dbUser }) {
             inverted
             onClick={() => {
               setOpen(false);
-              resetPassword();
+              if (modalMessage.action === "reset") {
+                resetPassword();
+              }
+              if (modalMessage.action === "delete") {
+                removeUser(e, user._id);
+              }
             }}
           >
             <Icon name="checkmark" /> Yes
