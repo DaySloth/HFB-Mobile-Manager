@@ -126,7 +126,7 @@ export default function SignIn() {
               loading={loading}
             />
             <div className={styles.centerText} style={{ marginTop: "10px" }}>
-              <a href="#">Forgot Password?</a>
+              <a href="/authorize/reset-password">Forgot Password?</a>
             </div>
           </div>
         </Form>
