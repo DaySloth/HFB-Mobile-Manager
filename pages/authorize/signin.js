@@ -12,6 +12,7 @@ export default function SignIn() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState(false);
+  const [tempPassword, setTempPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -25,6 +26,12 @@ export default function SignIn() {
       setPasswordError("");
     }
   }, [confirmPassword]);
+
+  useEffect(() => {
+    if (error === "Temporary password") {
+      setTempPassword(true);
+    }
+  }, [error]);
 
   return (
     <>
@@ -110,6 +117,7 @@ export default function SignIn() {
                 signIn("credentials", {
                   username: username,
                   password: password,
+                  isTempPassword: tempPassword,
                   callbackUrl: "http://localhost:3000",
                 });
               }}
