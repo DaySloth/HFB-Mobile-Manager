@@ -7,6 +7,7 @@ import { signOut, useSession } from "next-auth/client";
 export default function Header() {
   const [session, loading] = useSession();
   const router = useRouter();
+  console.log(session.user);
   const options = [
     { key: 1, text: "View Users", value: "/" },
     {
@@ -58,7 +59,7 @@ export default function Header() {
             </div>
             <div className={styles.floatRight}>
               <h3>
-                Hello {session.user.name},{" "}
+                Hello {session.user.first_name},{" "}
                 <span
                   className={styles.logout}
                   onClick={() => {
