@@ -58,11 +58,11 @@ export default NextAuth({
 const login = async (data) => {
   //   const { db } = await connectToDatabase();
   //   const Users = await db.collection("users");
-  const { username, password } = data;
+  const { username, password, isTempPassword } = data;
   try {
     const { data: user } = await axios.post(
       "https://hfb-api.herokuapp.com/api/users/login",
-      { email: username, password: password },
+      { email: username, password: password, isTempPassword: isTempPassword },
       {
         headers: {
           "hfb-apikey": "S29obGVyUm9ja3Mh",
