@@ -117,7 +117,7 @@ export default function SignIn() {
                 signIn("credentials", {
                   username: username,
                   password: password,
-                  isTempPassword: tempPassword,
+                  resetTempPassword: tempPassword,
                   callbackUrl: "http://localhost:3000",
                 });
               }}
