@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 export default function SignIn() {
   const router = useRouter();
   const { error, email } = router.query;
-  const [username, setUsername] = useState(email);
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState(false);
@@ -30,6 +30,9 @@ export default function SignIn() {
   useEffect(() => {
     if (error === "Temporary password") {
       setTempPassword(true);
+    }
+    if (email) {
+      setUsername(email);
     }
   }, [error]);
 
