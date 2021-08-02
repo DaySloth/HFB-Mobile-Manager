@@ -94,7 +94,9 @@ export default function EditUser({ dbUser }) {
         },
       }
     );
-    console.log(data);
+    if (data.status === 200) {
+      Router.push("/");
+    }
   }
 
   async function removeUser(e, userId) {
