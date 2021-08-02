@@ -257,7 +257,7 @@ export default function EditUser({ dbUser }) {
           <Button
             color="green"
             inverted
-            onClick={() => {
+            onClick={(e) => {
               setOpen(false);
               if (modalMessage.action === "reset") {
                 resetPassword();
