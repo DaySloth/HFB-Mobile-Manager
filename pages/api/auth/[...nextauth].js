@@ -19,8 +19,20 @@ export default NextAuth({
           // look up the user from the credentials supplied
           const user = await login(data);
           if (user) {
-            // Any object returned will be saved in `user` property of the JWT
-            return Promise.resolve(user);
+            if (user.hasWebAccess) {
+              if (user.isTempPassword) {
+                return Promise.reject(
+                  `/authorize/signin?error=Temporary password&email=${user.email}`
+                );
+              } else {
+                // Any object returned will be saved in `user` property of the JWT
+                return Promise.resolve(user);
+              }
+            } else {
+              return Promise.reject(
+                "/authorize/signin?error=Access not allowed to web manager"
+              );
+            }
           }
         } catch (error) {
           if (error) {
@@ -46,17 +58,21 @@ const login = async (data) => {
   //   const { db } = await connectToDatabase();
   //   const Users = await db.collection("users");
   const { username, password } = data;
-  const user = await axios.post(
-    "https://hfb-api.herokuapp.com/api/users/login",
-    { email: username, password: password },
-    {
-      headers: {
-        "hfb-apikey": "S29obGVyUm9ja3Mh",
-      },
-    }
-  );
+  try {
+    const { data: user } = await axios.post(
+      "https://hfb-api.herokuapp.com/api/users/login",
+      { email: username, password: password },
+      {
+        headers: {
+          "hfb-apikey": "S29obGVyUm9ja3Mh",
+        },
+      }
+    );
+    return user;
+  } catch (error) {
+    return null;
+  }
 
-  console.log(user);
   // if (user[0]) {
   //   const correctPass = await bcrypt.compare(password, user[0].password);
 
@@ -71,22 +87,9 @@ const login = async (data) => {
   // } else {
   //   return null;
   // }
-  // const result = await db.ref(`/users/${username}`).once("value");
-  // const foundUser = result.val();
-  // if (foundUser) {
-  //   if (foundUser.hasManagerAccess) {
-  //     if (Base64.decode(foundUser.password) === password) {
-  //       return {
-  //         name: foundUser.first_name,
-  //         email: foundUser.email,
-  //       };
-  //     } else {
-  //       return null;
-  //     }
-  //   } else {
-  //     return null;
-  //   }
-  // } else {
-  //   return null;
-  // }
+
+  // return {
+  //   name: "allister",
+  //   email: "someemail@email.com",
+  // };
 };
