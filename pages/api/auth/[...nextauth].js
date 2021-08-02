@@ -72,52 +72,52 @@ export default NextAuth({
 });
 
 const login = async (data) => {
-  // const { username, password, resetTempPassword } = data;
-  // if (resetTempPassword === "true") {
-  //   try {
-  //     const foundUser = await axios.post(
-  //       "https://hfb-api.herokuapp.com/api/users/login/temp-password",
-  //       { email: username, password: password },
-  //       {
-  //         headers: {
-  //           "hfb-apikey": "S29obGVyUm9ja3Mh",
-  //         },
-  //       }
-  //     );
+  const { username, password, resetTempPassword } = data;
+  if (resetTempPassword === "true") {
+    try {
+      const foundUser = await axios.post(
+        "https://hfb-api.herokuapp.com/api/users/login/temp-password",
+        { email: username, password: password },
+        {
+          headers: {
+            "hfb-apikey": "S29obGVyUm9ja3Mh",
+          },
+        }
+      );
 
-  //     if (foundUser) {
-  //       return foundUser;
-  //     } else {
-  //       return null;
-  //     }
-  //   } catch (error) {
-  //     return null;
-  //   }
-  // } else {
-  //   try {
-  //     const foundUser = await axios.post(
-  //       "https://hfb-api.herokuapp.com/api/users/login",
-  //       { email: username, password: password },
-  //       {
-  //         headers: {
-  //           "hfb-apikey": "S29obGVyUm9ja3Mh",
-  //         },
-  //       }
-  //     );
+      if (foundUser) {
+        return foundUser;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      return null;
+    }
+  } else {
+    try {
+      const foundUser = await axios.post(
+        "https://hfb-api.herokuapp.com/api/users/login",
+        { email: username, password: password },
+        {
+          headers: {
+            "hfb-apikey": "S29obGVyUm9ja3Mh",
+          },
+        }
+      );
 
-  //     if (foundUser) {
-  //       return foundUser;
-  //     } else {
-  //       return null;
-  //     }
-  //   } catch (error) {
-  //     return null;
-  //   }
-  // }
-  return {
-    data: {
-      first_name: "Test User",
-      hasWebAccess: true,
-    },
-  };
+      if (foundUser) {
+        return foundUser;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      return null;
+    }
+  }
+  // return {
+  //   data: {
+  //     first_name: "Test User",
+  //     hasWebAccess: true,
+  //   },
+  // };
 };
