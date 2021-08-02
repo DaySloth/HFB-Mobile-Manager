@@ -14,12 +14,13 @@ export default NextAuth({
           const data = {
             username: credentials.username,
             password: credentials.password,
-            isTempPassword: credentials.tempPassword,
+            resetTempPassword: credentials.resetTempPassword,
           };
           // API call associated with authentification
           // look up the user from the credentials supplied
           const user = await login(data);
           if (user) {
+            console.log(user);
             if (user.hasWebAccess) {
               if (user.isTempPassword) {
                 return Promise.reject(
@@ -58,18 +59,37 @@ export default NextAuth({
 const login = async (data) => {
   //   const { db } = await connectToDatabase();
   //   const Users = await db.collection("users");
-  const { username, password, isTempPassword } = data;
+  const { username, password, resetTempPassword } = data;
   try {
-    const { data: user } = await axios.post(
-      "https://hfb-api.herokuapp.com/api/users/login",
-      { email: username, password: password, isTempPassword: isTempPassword },
-      {
-        headers: {
-          "hfb-apikey": "S29obGVyUm9ja3Mh",
+    if (resetTempPassword) {
+      const { data: user } = await axios.post(
+        "https://hfb-api.herokuapp.com/api/users/login/temp-password",
+        {
+          email: username,
+          password: password,
         },
-      }
-    );
-    return user;
+        {
+          headers: {
+            "hfb-apikey": "S29obGVyUm9ja3Mh",
+          },
+        }
+      );
+      return user;
+    } else {
+      const { data: user } = await axios.post(
+        "https://hfb-api.herokuapp.com/api/users/login",
+        {
+          email: username,
+          password: password,
+        },
+        {
+          headers: {
+            "hfb-apikey": "S29obGVyUm9ja3Mh",
+          },
+        }
+      );
+      return user;
+    }
   } catch (error) {
     return null;
   }
