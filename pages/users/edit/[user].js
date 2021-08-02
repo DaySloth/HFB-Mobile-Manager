@@ -251,17 +251,17 @@ export default function EditUser({ dbUser }) {
           Are you sure you want to reset the password for {first_name}?
         </Header>
         <Modal.Actions>
+          <Button color="red" inverted onClick={() => setOpen(false)}>
+            <Icon name="remove" /> No
+          </Button>
           <Button
-            color="red"
+            color="green"
             inverted
             onClick={() => {
               setOpen(false);
               resetPassword();
             }}
           >
-            <Icon name="remove" /> No
-          </Button>
-          <Button color="green" inverted onClick={() => setOpen(false)}>
             <Icon name="checkmark" /> Yes
           </Button>
         </Modal.Actions>
