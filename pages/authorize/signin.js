@@ -6,12 +6,25 @@ import { signIn } from "next-auth/client";
 import { useRouter } from "next/router";
 
 export default function SignIn() {
-  const [username, setUsername] = useState("");
+  const router = useRouter();
+  const { error, email } = router.query;
+  const [username, setUsername] = useState(email);
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const router = useRouter();
-  const { error } = router.query;
+  useEffect(() => {
+    if (confirmPassword) {
+      if (confirmPassword !== password) {
+        setPasswordError("Passwords do not match");
+      } else if (confirmPassword === password) {
+        setPasswordError("");
+      }
+    } else {
+      setPasswordError("");
+    }
+  }, [confirmPassword]);
 
   return (
     <>
@@ -37,19 +50,54 @@ export default function SignIn() {
             onChange={(event) => setUsername(event.target.value)}
             value={username}
           />
-          <Form.Input
-            icon="lock"
-            iconPosition="left"
-            label="Password"
-            type="password"
-            onChange={(event) => setPassword(event.target.value)}
-            value={password}
-          />
+
+          {error === "Temporary password" ? (
+            <>
+              <Form.Input
+                icon="lock"
+                iconPosition="left"
+                label="New Password"
+                type="password"
+                onChange={(event) => setPassword(event.target.value)}
+                className={passwordError && styles.redGlowingBorder}
+                value={password}
+              />
+              <Form.Input
+                icon="lock"
+                iconPosition="left"
+                label="Confirm New Password"
+                type="password"
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                className={passwordError && styles.redGlowingBorder}
+                value={confirmPassword}
+              />
+              {passwordError && (
+                <>
+                  <h5 className={styles.redText}>{passwordError}</h5>
+                </>
+              )}
+            </>
+          ) : (
+            <Form.Input
+              icon="lock"
+              iconPosition="left"
+              label="Password"
+              type="password"
+              onChange={(event) => setPassword(event.target.value)}
+              value={password}
+            />
+          )}
 
           {error && (
             <>
-              <Message color="red">
-                <Message.Header>Invalid username or password</Message.Header>
+              <Message
+                color={error === "Temporary password" ? "orange" : "red"}
+              >
+                <Message.Header>
+                  {error === "Temporary password"
+                    ? "Please create a new password"
+                    : "Invalid username or password"}
+                </Message.Header>
               </Message>
             </>
           )}
