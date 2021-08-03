@@ -14,14 +14,16 @@ import {
   List,
 } from "semantic-ui-react";
 import { useSession } from "next-auth/client";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styles from "../styles/Home.module.css";
 import Loader from "../components/loader";
 import axios from "axios";
+import ThemeContext from "../util/context/darkTheme";
 
 export default function Home({ users }) {
   const Router = useRouter();
   const [session, loading] = useSession();
+  const { darkTheme } = useContext(ThemeContext);
 
   useEffect(() => {
     if (!loading) {
@@ -36,10 +38,19 @@ export default function Home({ users }) {
       display: none;
     }
   `;
+  const darkcss = `
+    .hidden {
+      display: none;
+    }
+
+    body{
+      background-color: #484848 !important
+    }
+  `;
 
   return (
     <>
-      <style>{css}</style>
+      <style>{darkTheme ? darkcss : css}</style>
       {loading && <Loader />}
 
       {session && (
@@ -51,7 +62,7 @@ export default function Home({ users }) {
           <NavHeader />
 
           <div className={styles.center}>
-            <Header as="h2" icon>
+            <Header as="h2" icon inverted={darkTheme}>
               <Icon name="mobile alternate" />
               Users
             </Header>
@@ -69,7 +80,7 @@ export default function Home({ users }) {
               </div> */}
 
               <div className={styles.tableContainer}>
-                <Table celled>
+                <Table celled inverted={darkTheme}>
                   <Table.Header>
                     <Table.Row>
                       <Table.HeaderCell>First Name</Table.HeaderCell>
