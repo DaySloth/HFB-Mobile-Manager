@@ -3,25 +3,18 @@ import { useRouter } from "next/router";
 import NavHeader from "../../components/header.js";
 import {
   Icon,
-  Dropdown,
-  Table,
   Header,
-  Input,
   Button,
-  Modal,
   Message,
   Segment,
-  Label,
-  List,
   Form,
-  Checkbox,
-  Grid,
 } from "semantic-ui-react";
 import { useSession } from "next-auth/client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import styles from "../../styles/Home.module.css";
 import Loader from "../../components/loader";
 import axios from "axios";
+import ThemeContext from "../../util/context/darkTheme.js";
 
 export default function AddAProduct({
   products,
@@ -29,6 +22,7 @@ export default function AddAProduct({
   titles,
   finishes,
 }) {
+  const { darkTheme } = useContext(ThemeContext);
   const Router = useRouter();
   const [message, setMessage] = useState({
     visible: false,
@@ -170,8 +164,24 @@ export default function AddAProduct({
     }
   }, [loading]);
 
+  const css = `
+    .hidden {
+      display: none;
+    }
+  `;
+  const darkcss = `
+    .hidden {
+      display: none;
+    }
+
+    body{
+      background-color: #484848 !important
+    }
+  `;
+
   return (
     <>
+      <style>{darkTheme ? darkcss : css}</style>
       {loading && <Loader />}
 
       {session && (
@@ -183,7 +193,7 @@ export default function AddAProduct({
           <NavHeader />
 
           <div className={styles.center}>
-            <Header as="h2" icon>
+            <Header as="h2" icon inverted={darkTheme}>
               <Icon name="warehouse" />
               Add A Product
             </Header>
@@ -204,15 +214,32 @@ export default function AddAProduct({
                   <Form.Group widths="equal">
                     {newCategory ? (
                       <Form.Input
+                        required
                         fluid
-                        label="New Category"
+                        label={
+                          <label
+                            className={
+                              darkTheme ? styles.whiteLabel : styles.blackLabel
+                            }
+                          >
+                            New Category
+                          </label>
+                        }
                         onChange={(e, { value }) =>
                           setNewProduct({ ...newProduct, category: value })
                         }
                       />
                     ) : (
                       <Form.Select
-                        label="Category"
+                        label={
+                          <label
+                            className={
+                              darkTheme ? styles.whiteLabel : styles.blackLabel
+                            }
+                          >
+                            Category
+                          </label>
+                        }
                         value={newProduct.category}
                         required
                         onChange={(e, { value }) =>
@@ -228,15 +255,32 @@ export default function AddAProduct({
                     )}
                     {newTitle ? (
                       <Form.Input
+                        required
                         fluid
-                        label="New Title"
+                        label={
+                          <label
+                            className={
+                              darkTheme ? styles.whiteLabel : styles.blackLabel
+                            }
+                          >
+                            New Title
+                          </label>
+                        }
                         onChange={(e, { value }) =>
                           setNewProduct({ ...newProduct, title: value })
                         }
                       />
                     ) : (
                       <Form.Select
-                        label="Title"
+                        label={
+                          <label
+                            className={
+                              darkTheme ? styles.whiteLabel : styles.blackLabel
+                            }
+                          >
+                            Title
+                          </label>
+                        }
                         value={newProduct.title}
                         required
                         onChange={(e, { value }) =>
@@ -254,15 +298,32 @@ export default function AddAProduct({
                   <Form.Group widths="equal">
                     {newFinish ? (
                       <Form.Input
+                        required
                         fluid
-                        label="New Finish"
+                        label={
+                          <label
+                            className={
+                              darkTheme ? styles.whiteLabel : styles.blackLabel
+                            }
+                          >
+                            New Finish
+                          </label>
+                        }
                         onChange={(e, { value }) =>
                           setNewProduct({ ...newProduct, finish: value })
                         }
                       />
                     ) : (
                       <Form.Select
-                        label="Finish"
+                        label={
+                          <label
+                            className={
+                              darkTheme ? styles.whiteLabel : styles.blackLabel
+                            }
+                          >
+                            Finish
+                          </label>
+                        }
                         value={newProduct.finish}
                         required
                         onChange={(e, { value }) =>
@@ -278,7 +339,15 @@ export default function AddAProduct({
                     )}
                     <Form.Input
                       fluid
-                      label="Length"
+                      label={
+                        <label
+                          className={
+                            darkTheme ? styles.whiteLabel : styles.blackLabel
+                          }
+                        >
+                          Length
+                        </label>
+                      }
                       value={newProduct.length}
                       type="number"
                       step="0.01"
@@ -288,7 +357,15 @@ export default function AddAProduct({
                     />
                     <Form.Input
                       fluid
-                      label="Width"
+                      label={
+                        <label
+                          className={
+                            darkTheme ? styles.whiteLabel : styles.blackLabel
+                          }
+                        >
+                          Width
+                        </label>
+                      }
                       value={newProduct.width}
                       type="number"
                       step="0.01"
@@ -298,7 +375,15 @@ export default function AddAProduct({
                     />
                     <Form.Input
                       fluid
-                      label="Height"
+                      label={
+                        <label
+                          className={
+                            darkTheme ? styles.whiteLabel : styles.blackLabel
+                          }
+                        >
+                          Height
+                        </label>
+                      }
                       value={newProduct.height}
                       type="number"
                       step="0.01"
@@ -311,7 +396,15 @@ export default function AddAProduct({
                     <Form.Input
                       fluid
                       required
-                      label="Part #"
+                      label={
+                        <label
+                          className={
+                            darkTheme ? styles.whiteLabel : styles.blackLabel
+                          }
+                        >
+                          Part #
+                        </label>
+                      }
                       value={newProduct.part_num}
                       onChange={(e, { value }) =>
                         setNewProduct({ ...newProduct, part_num: value })
@@ -319,7 +412,15 @@ export default function AddAProduct({
                     />
                     <Form.Input
                       fluid
-                      label="Price"
+                      label={
+                        <label
+                          className={
+                            darkTheme ? styles.whiteLabel : styles.blackLabel
+                          }
+                        >
+                          Price
+                        </label>
+                      }
                       step="0.01"
                       value={newProduct.price}
                       required
@@ -330,7 +431,15 @@ export default function AddAProduct({
                     />
                     <Form.Input
                       fluid
-                      label="Quantity"
+                      label={
+                        <label
+                          className={
+                            darkTheme ? styles.whiteLabel : styles.blackLabel
+                          }
+                        >
+                          Quantity
+                        </label>
+                      }
                       value={newProduct.quantity}
                       required
                       type="number"
