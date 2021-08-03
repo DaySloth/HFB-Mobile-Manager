@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import {
   Button,
   Form,
@@ -16,8 +16,10 @@ import NavHeader from "../../../components/header";
 import { useSession } from "next-auth/client";
 import Loader from "../../../components/loader";
 import { useRouter } from "next/router";
+import ThemeContext from "../../../util/context/darkTheme";
 
 export default function EditUser({ dbUser }) {
+  const { darkTheme } = useContext(ThemeContext);
   const Router = useRouter();
   const [session, loading] = useSession();
 
@@ -113,8 +115,24 @@ export default function EditUser({ dbUser }) {
     }
   }
 
+  const css = `
+    .hidden {
+      display: none;
+    }
+  `;
+  const darkcss = `
+    .hidden {
+      display: none;
+    }
+
+    body{
+      background-color: #484848 !important
+    }
+  `;
+
   return (
     <>
+      <style>{darkTheme ? darkcss : css}</style>
       {loading && <Loader />}
       {session && (
         <>
@@ -125,7 +143,7 @@ export default function EditUser({ dbUser }) {
           <NavHeader />
 
           <div className={styles.center}>
-            <Header as="h2" icon>
+            <Header as="h2" icon inverted={darkTheme}>
               <Icon name="edit outline" />
               Edit User
             </Header>
@@ -139,7 +157,15 @@ export default function EditUser({ dbUser }) {
                 <Form.Input
                   icon="user"
                   iconPosition="left"
-                  label="First Name"
+                  label={
+                    <label
+                      className={
+                        darkTheme ? styles.whiteLabel : styles.blackLabel
+                      }
+                    >
+                      First Name
+                    </label>
+                  }
                   type="text"
                   placeholder="First name"
                   onChange={(event) => setFirstName(event.target.value)}
@@ -147,7 +173,15 @@ export default function EditUser({ dbUser }) {
                   required
                 />
                 <Form.Input
-                  label="Last Name"
+                  label={
+                    <label
+                      className={
+                        darkTheme ? styles.whiteLabel : styles.blackLabel
+                      }
+                    >
+                      Last Name
+                    </label>
+                  }
                   type="text"
                   placeholder="Last name"
                   onChange={(event) => setLastName(event.target.value)}
@@ -155,7 +189,15 @@ export default function EditUser({ dbUser }) {
                   required
                 />
                 <Form.Input
-                  label="Email"
+                  label={
+                    <label
+                      className={
+                        darkTheme ? styles.whiteLabel : styles.blackLabel
+                      }
+                    >
+                      Email
+                    </label>
+                  }
                   type="email"
                   placeholder="User@email.com"
                   onChange={(event) => setEmail(event.target.value)}
@@ -164,7 +206,15 @@ export default function EditUser({ dbUser }) {
                 />
 
                 <Form.Input
-                  label="Phone Number"
+                  label={
+                    <label
+                      className={
+                        darkTheme ? styles.whiteLabel : styles.blackLabel
+                      }
+                    >
+                      Phone Number
+                    </label>
+                  }
                   type="tel"
                   onChange={(event) => setPhoneNumber(event.target.value)}
                   value={phone_number}
@@ -172,7 +222,15 @@ export default function EditUser({ dbUser }) {
                 />
                 <div className={styles.block}>
                   <Checkbox
-                    label="Has Web Manager Access"
+                    label={
+                      <label
+                        className={
+                          darkTheme ? styles.whiteLabel : styles.blackLabel
+                        }
+                      >
+                        Has Web Manager Access?
+                      </label>
+                    }
                     className={styles.topBottomSpacing}
                     onChange={() => setWebAccess(!webAccess)}
                     checked={webAccess}
