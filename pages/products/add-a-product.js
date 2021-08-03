@@ -129,7 +129,6 @@ export default function AddAProduct({
       let formData = new FormData();
       formData.append("image", newProduct.image);
       formData.append("data", JSON.stringify(newProduct));
-      // http://localhost:3001/api/products/create
       axios
         .post("https://hfb-api.herokuapp.com/api/products/create", formData, {
           headers: {
