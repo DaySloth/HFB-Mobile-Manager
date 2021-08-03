@@ -17,6 +17,15 @@
   cursor: pointer;
 }
 
+.themeSelect {
+  float: left;
+  margin-left: 20%;
+}
+
+.whiteLabel {
+  color: white !important;
+}
+
 .loading {
   margin-top: 100px;
   text-align: center;
