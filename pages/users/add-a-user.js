@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import {
   Button,
   Form,
@@ -7,14 +7,17 @@ import {
   Checkbox,
   Header,
   Icon,
+  Label,
 } from "semantic-ui-react";
 import styles from "../../styles/Home.module.css";
 import axios from "axios";
 import NavHeader from "../../components/header";
 import { useSession } from "next-auth/client";
 import Loader from "../../components/loader";
+import ThemeContext from "../../util/context/darkTheme";
 
 export default function SignUp() {
+  const { darkTheme } = useContext(ThemeContext);
   const [session, loading] = useSession();
 
   useEffect(() => {
@@ -125,8 +128,24 @@ export default function SignUp() {
     setWebAccess(false);
   };
 
+  const css = `
+    .hidden {
+      display: none;
+    }
+  `;
+  const darkcss = `
+    .hidden {
+      display: none;
+    }
+
+    body{
+      background-color: #484848 !important
+    }
+  `;
+
   return (
     <>
+      <style>{darkTheme ? darkcss : css}</style>
       {loading && <Loader />}
       {session && (
         <>
@@ -137,7 +156,7 @@ export default function SignUp() {
           <NavHeader />
 
           <div className={styles.center}>
-            <Header as="h2" icon>
+            <Header as="h2" icon inverted={darkTheme}>
               <Icon name="add user" />
               Add a User
             </Header>
@@ -150,43 +169,87 @@ export default function SignUp() {
               <Form.Input
                 icon="user"
                 iconPosition="left"
-                label="First Name"
+                label={
+                  <label
+                    className={
+                      darkTheme ? styles.whiteLabel : styles.blackLabel
+                    }
+                  >
+                    First Name
+                  </label>
+                }
                 type="text"
                 placeholder="First name"
                 onChange={(event) => setFirstName(event.target.value)}
                 value={first_name}
                 required
+                className={styles.whiteLabel}
               />
 
               <Form.Input
-                label="Last Name"
+                label={
+                  <label
+                    className={
+                      darkTheme ? styles.whiteLabel : styles.blackLabel
+                    }
+                  >
+                    Last Name
+                  </label>
+                }
                 type="text"
                 placeholder="Last name"
                 onChange={(event) => setLastName(event.target.value)}
                 value={last_name}
                 required
+                inverted={darkTheme}
               />
 
               <Form.Input
-                label="Email"
+                label={
+                  <label
+                    className={
+                      darkTheme ? styles.whiteLabel : styles.blackLabel
+                    }
+                  >
+                    Email
+                  </label>
+                }
                 type="email"
                 placeholder="User@email.com"
                 onChange={(event) => setEmail(event.target.value)}
                 value={email}
                 required
+                inverted={darkTheme}
               />
 
               <Form.Input
-                label="Phone Number"
+                label={
+                  <label
+                    className={
+                      darkTheme ? styles.whiteLabel : styles.blackLabel
+                    }
+                  >
+                    Phone Number
+                  </label>
+                }
                 type="tel"
                 onChange={(event) => setPhoneNumber(event.target.value)}
                 value={phone_number}
                 required
+                inverted={darkTheme}
               />
-              
+
               <div className={styles.block}>
                 <Checkbox
-                  label="Temporary Password"
+                  label={
+                    <label
+                      className={
+                        darkTheme ? styles.whiteLabel : styles.blackLabel
+                      }
+                    >
+                      Temporary Password
+                    </label>
+                  }
                   className={styles.topBottomSpacing}
                   onChange={() => setTempPassword(!tempPassword)}
                   checked={tempPassword}
@@ -194,7 +257,15 @@ export default function SignUp() {
               </div>
               <div className={styles.block}>
                 <Checkbox
-                  label="Has Web Manager Access"
+                  label={
+                    <label
+                      className={
+                        darkTheme ? styles.whiteLabel : styles.blackLabel
+                      }
+                    >
+                      Has Web Manager Access?
+                    </label>
+                  }
                   className={styles.topBottomSpacing}
                   onChange={() => setWebAccess(!webAccess)}
                   checked={webAccess}
@@ -206,23 +277,41 @@ export default function SignUp() {
                   <Form.Input
                     icon="lock"
                     iconPosition="left"
-                    label="Password"
+                    label={
+                      <label
+                        className={
+                          darkTheme ? styles.whiteLabel : styles.blackLabel
+                        }
+                      >
+                        Password
+                      </label>
+                    }
                     type="password"
                     onChange={(event) => setPassword(event.target.value)}
                     className={passwordError && styles.redGlowingBorder}
                     value={password}
                     required
+                    inverted={darkTheme}
                   />
 
                   <Form.Input
                     icon="lock"
                     iconPosition="left"
-                    label="Confirm Password"
+                    label={
+                      <label
+                        className={
+                          darkTheme ? styles.whiteLabel : styles.blackLabel
+                        }
+                      >
+                        Confirm Password
+                      </label>
+                    }
                     type="password"
                     onChange={(event) => setConfirmPassword(event.target.value)}
                     value={confirmPassword}
                     className={passwordError && styles.redGlowingBorder}
                     required
+                    inverted={darkTheme}
                   />
                 </>
               )}
