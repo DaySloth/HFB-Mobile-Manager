@@ -247,7 +247,7 @@ export default function EditUser({ dbUser }) {
         size="small"
       >
         <Header icon>
-          <Icon name="archive" />
+          <Icon name="warning sign" />
           {modalMessage.message}
         </Header>
         <Modal.Actions>
