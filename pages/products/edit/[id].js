@@ -86,6 +86,7 @@ export default function AddAProduct({
   const [newCategory, setNewCategory] = useState(false);
   const [newTitle, setNewTitle] = useState(false);
   const [newFinish, setNewFinish] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (newProduct.title === "create title") {
@@ -180,6 +181,29 @@ export default function AddAProduct({
           image: data.url,
           image_id: data.image_id,
         });
+      });
+  }
+
+  async function deleteProduct() {
+    axios
+      .get(
+        `https://hfb-api.herokuapp.com/api/products/delete/${foundProduct._id}`,
+        {
+          headers: {
+            "hfb-apikey": "S29obGVyUm9ja3Mh",
+          },
+        }
+      )
+      .then((response) => {
+        if (response.status === 200) {
+          Router.push("/products");
+        } else {
+          setMessage({
+            visible: true,
+            text: "Error in deleteing product, try again",
+            color: "red",
+          });
+        }
       });
   }
 
@@ -428,28 +452,19 @@ export default function AddAProduct({
                       Save
                     </Button>
                     <Button
-                      color="grey"
-                      className={styles.centerLogo}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        clearForm();
-                      }}
-                      disabled
-                    >
-                      Clear Form
-                    </Button>
-                  </div>
-                  <div className={styles.centerButton}>
-                    <Button
                       type="submit"
                       color="red"
                       className={styles.centerLogo}
-                      disabled
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setOpen(true);
+                      }}
                     >
                       <Icon name="trash" />
                       Delete Product
                     </Button>
                   </div>
+
                   {message.visible && (
                     <Message
                       onDismiss={() => {
@@ -475,6 +490,33 @@ export default function AddAProduct({
           )}
         </>
       )}
+      <Modal
+        basic
+        onClose={() => setOpen(false)}
+        onOpen={() => setOpen(true)}
+        open={open}
+        size="small"
+      >
+        <Header icon>
+          <Icon name="warning sign" />
+          "Are you sure you want to delete this product?"
+        </Header>
+        <Modal.Actions>
+          <Button color="red" inverted onClick={() => setOpen(false)}>
+            <Icon name="remove" /> No
+          </Button>
+          <Button
+            color="green"
+            inverted
+            onClick={(e) => {
+              setOpen(false);
+              deleteProduct();
+            }}
+          >
+            <Icon name="checkmark" /> Yes
+          </Button>
+        </Modal.Actions>
+      </Modal>
     </>
   );
 }
