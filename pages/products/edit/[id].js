@@ -129,7 +129,7 @@ export default function AddAProduct({
     ) {
       axios
         .post(
-          `http://localhost:3001/api/products/update/${foundProduct._id}`,
+          `https://hfb-api.herokuapp.com//api/products/update/${foundProduct._id}`,
           newProduct,
           {
             headers: {
