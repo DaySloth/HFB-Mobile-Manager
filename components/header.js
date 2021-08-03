@@ -1,10 +1,13 @@
-import { Dropdown, Menu, Grid } from "semantic-ui-react";
+import { Dropdown, Menu, Grid, Checkbox, Segment } from "semantic-ui-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import styles from "../styles/Home.module.css";
 import { signOut, useSession } from "next-auth/client";
+import ThemeContext from "../util/context/darkTheme";
+import { useContext } from "react";
 
 export default function Header() {
+  const { darkTheme, setDarkTheme } = useContext(ThemeContext);
   const [session, loading] = useSession();
   const router = useRouter();
   const options = [
@@ -55,6 +58,18 @@ export default function Header() {
                   }}
                 />
               </Menu>
+            </div>
+            <div className={styles.themeSelect}>
+              <Segment compact>
+                <Checkbox
+                  toggle
+                  label={darkTheme ? "Dark Theme" : "Light Theme"}
+                  checked={darkTheme}
+                  onClick={() => {
+                    setDarkTheme(!darkTheme);
+                  }}
+                />
+              </Segment>
             </div>
             <div className={styles.floatRight}>
               <h3>
