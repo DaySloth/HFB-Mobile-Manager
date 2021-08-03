@@ -1,26 +1,16 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
 import NavHeader from "../../components/header.js";
-import {
-  Icon,
-  Table,
-  Header,
-  Input,
-  Button,
-  Modal,
-  Message,
-  Segment,
-  Image,
-  Label,
-  List,
-} from "semantic-ui-react";
+import { Icon, Table, Header, Button, Segment, Image } from "semantic-ui-react";
 import { useSession } from "next-auth/client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import styles from "../../styles/Home.module.css";
 import Loader from "../../components/loader";
 import axios from "axios";
+import ThemeContext from "../../util/context/darkTheme.js";
 
 export default function Products({ products }) {
+  const { darkTheme } = useContext(ThemeContext);
   const Router = useRouter();
   const [session, loading] = useSession();
 
@@ -32,8 +22,24 @@ export default function Products({ products }) {
     }
   }, [loading]);
 
+  const css = `
+    .hidden {
+      display: none;
+    }
+  `;
+  const darkcss = `
+    .hidden {
+      display: none;
+    }
+
+    body{
+      background-color: #484848 !important
+    }
+  `;
+
   return (
     <>
+      <style>{darkTheme ? darkcss : css}</style>
       {loading && <Loader />}
 
       {session && (
@@ -45,7 +51,7 @@ export default function Products({ products }) {
           <NavHeader />
 
           <div className={styles.center}>
-            <Header as="h2" icon>
+            <Header as="h2" icon inverted={darkTheme}>
               <Icon name="warehouse" />
               Products
             </Header>
@@ -63,7 +69,7 @@ export default function Products({ products }) {
               </div> */}
 
               <div className={styles.tableContainer}>
-                <Table celled selectable compact>
+                <Table celled selectable compact inverted={darkTheme}>
                   <Table.Header>
                     <Table.Row>
                       <Table.HeaderCell>Image</Table.HeaderCell>
@@ -101,12 +107,17 @@ export default function Products({ products }) {
               </div>
             </>
           ) : (
-            <Segment placeholder>
+            <Segment placeholder inverted={darkTheme}>
               <Header icon>
                 <Icon name="bath" />
                 No products found in the database
               </Header>
-              <Button primary href="/products/add-a-product">
+              <Button
+                primary
+                onClick={() => {
+                  Router.push("/products/add-a-product");
+                }}
+              >
                 Add a Product
               </Button>
             </Segment>
