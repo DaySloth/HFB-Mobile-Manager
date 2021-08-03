@@ -31,6 +31,7 @@ export default function AddAProduct({
   titles,
   finishes,
 }) {
+  const [isDifferent, setIsDifferent] = useState(false);
   const Router = useRouter();
   const [message, setMessage] = useState({
     visible: false,
@@ -72,13 +73,14 @@ export default function AddAProduct({
     price: foundProduct.price,
     quantity: foundProduct.quantity,
     category: foundProduct.category,
-    sub_category: "",
+    sub_category: foundProduct.sub_category,
     part_num: foundProduct.part_num,
     finish: foundProduct.finish,
-    length: foundProduct.length,
+    length: foundProduct["length"],
     width: foundProduct.width,
     height: foundProduct.height,
-    image: "",
+    image: foundProduct.image,
+    image_id: foundProduct.image_id,
   });
 
   const [newCategory, setNewCategory] = useState(false);
@@ -110,13 +112,14 @@ export default function AddAProduct({
       width: "",
       height: "",
       image: "",
+      image_id: "",
     });
     setNewTitle(false);
     setNewCategory(false);
     setNewFinish(false);
   }
 
-  async function createProduct() {
+  async function updateProduct() {
     setButtonLoading(true);
     let { title, price, quantity, category, part_num, finish } = newProduct;
     if (
@@ -128,28 +131,20 @@ export default function AddAProduct({
       finish &&
       quantity
     ) {
-      let formData = new FormData();
-      formData.append("image", newProduct.image);
-      formData.append("data", JSON.stringify(newProduct));
-      //https://hfb-api.herokuapp.com/api/products/create
       axios
-        .post("http://localhost:3001/api/products/create", formData, {
-          headers: {
-            "hfb-apikey": "S29obGVyUm9ja3Mh",
-            "Content-Type": "multipart/form-data",
-          },
-        })
+        .post(
+          `http://localhost:3001/api/products/update/${foundProduct._id}`,
+          newProduct,
+          {
+            headers: {
+              "hfb-apikey": "S29obGVyUm9ja3Mh",
+            },
+          }
+        )
         .then((result) => {
           if (result.status === 200) {
             setButtonLoading(false);
-            clearForm();
-            setMessage({
-              visible: true,
-              color: "green",
-              text: "Successfully added new product!",
-            });
-
-            Router.replace(Router.asPath);
+            Router.push("/products");
           } else {
             setButtonLoading(false);
             setMessage({
@@ -164,6 +159,50 @@ export default function AddAProduct({
       alert("Not done yet");
     }
   }
+
+  async function uploadImage(image) {
+    let formData = new FormData();
+    formData.append("image", image);
+    axios
+      .post(
+        "https://hfb-api.herokuapp.com/api/products/upload-image",
+        formData,
+        {
+          headers: {
+            "hfb-apikey": "S29obGVyUm9ja3Mh",
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
+      .then(({ data }) => {
+        setNewProduct({
+          ...newProduct,
+          image: data.url,
+          image_id: data.image_id,
+        });
+      });
+  }
+
+  useEffect(() => {
+    if (
+      newProduct.title !== foundProduct.title ||
+      newProduct.price !== foundProduct.price ||
+      newProduct.quantity !== foundProduct.quantity ||
+      newProduct.category !== foundProduct.category ||
+      newProduct.sub_category !== foundProduct.sub_category ||
+      newProduct.part_num !== foundProduct.part_num ||
+      newProduct.finish !== foundProduct.finish ||
+      newProduct["length"] !== foundProduct["length"] ||
+      newProduct.width !== foundProduct.width ||
+      newProduct.height !== foundProduct.height ||
+      newProduct.image !== foundProduct.image ||
+      newProduct.image_id !== foundProduct.image_id
+    ) {
+      setIsDifferent(true);
+    } else {
+      setIsDifferent(false);
+    }
+  }, [newProduct]);
 
   useEffect(() => {
     if (!loading) {
@@ -200,12 +239,12 @@ export default function AddAProduct({
                 <Form
                   onSubmit={(e) => {
                     e.preventDefault();
-                    createProduct();
+                    updateProduct();
                   }}
                 >
                   <Form.Group widths="equal">
                     <div className={styles.center}>
-                      <Image src={foundProduct.image} size="small" />
+                      <Image src={newProduct.image} size="small" />
                     </div>
                   </Form.Group>
                   <Form.Group widths="equal">
@@ -286,11 +325,14 @@ export default function AddAProduct({
                     <Form.Input
                       fluid
                       label="Length"
-                      value={newProduct.length}
+                      value={newProduct["length"]}
                       type="number"
                       step="0.01"
                       onChange={(e, { value }) =>
-                        setNewProduct({ ...newProduct, length: value })
+                        setNewProduct({
+                          ...newProduct,
+                          length: parseInt(value),
+                        })
                       }
                     />
                     <Form.Input
@@ -300,7 +342,7 @@ export default function AddAProduct({
                       type="number"
                       step="0.01"
                       onChange={(e, { value }) =>
-                        setNewProduct({ ...newProduct, width: value })
+                        setNewProduct({ ...newProduct, width: parseInt(value) })
                       }
                     />
                     <Form.Input
@@ -310,7 +352,10 @@ export default function AddAProduct({
                       type="number"
                       step="0.01"
                       onChange={(e, { value }) =>
-                        setNewProduct({ ...newProduct, height: value })
+                        setNewProduct({
+                          ...newProduct,
+                          height: parseInt(value),
+                        })
                       }
                     />
                   </Form.Group>
@@ -342,7 +387,10 @@ export default function AddAProduct({
                       required
                       type="number"
                       onChange={(e, { value }) =>
-                        setNewProduct({ ...newProduct, quantity: value })
+                        setNewProduct({
+                          ...newProduct,
+                          quantity: parseInt(value),
+                        })
                       }
                     />
                   </Form.Group>
@@ -359,7 +407,6 @@ export default function AddAProduct({
                         e.preventDefault();
                         fileInputRef.current.click();
                       }}
-                      disabled
                     />
                     <input
                       ref={fileInputRef}
@@ -367,11 +414,7 @@ export default function AddAProduct({
                       type="file"
                       hidden
                       onChange={(e) => {
-                        console.log(e.target.files[0]);
-                        setNewProduct({
-                          ...newProduct,
-                          image: e.target.files[0],
-                        });
+                        uploadImage(e.target.files[0]);
                       }}
                     />
                   </Form.Group>
@@ -380,7 +423,7 @@ export default function AddAProduct({
                       type="submit"
                       color="green"
                       className={styles.centerLogo}
-                      disabled
+                      disabled={!isDifferent}
                     >
                       Save
                     </Button>
